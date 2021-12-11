@@ -44,5 +44,5 @@ For PyEMMA installation, you may refer to http://pyemma.org.
 This tutorial is licensed with <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
 The library for Quasi-MSM construction is licensed with  <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.
 
-##External Library
+### External Library
 APLoD clustering library is part of HK_DataMiner(Apache 2.0): https://github.com/liusong299/HK_DataMiner
