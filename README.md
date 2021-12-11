@@ -24,11 +24,11 @@ There are 7 notebooks that depict various stages of qMSM construction
 For the MD trajectories, you may download them at our dispository on Open Science Framework. (Please refer to the book chapter for the URL)
 
 ### Installation
-We will use MSMbuilder 3.8.0 and PyEMMA in our tutorial. For installing MSMbuilder, you can use the following script:
+We will use MSMbuilder 3.8.0 and PyEMMA in our tutorial. For installing MSMbuilder, you can use the following script::
 
-bash install_miniconda_MSMbuilder.sh
+	bash install_miniconda_MSMbuilder.sh
 
-This will install miniconda(if not installed yet), MSMbuilder as well as libraries used in this tutorial  
+This will install miniconda(if not installed yet), MSMbuilder as well as libraries used in this tutorial.
 
 For PyEMMA installation, you may refer to http://pyemma.org.
 
