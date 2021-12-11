@@ -1,5 +1,5 @@
 # QuasiMSM_ModuleBuilder
-**Version 0.1, (c) Yunrui Qiu**
+**Version 0.1, (c) Huang Group, Department of Chemistry, University of Wisconsin-Madison**
 ## Overview
 A library for building Quasi-Markov State Model(qMSM). 
 
