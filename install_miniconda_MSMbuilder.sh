@@ -8,7 +8,6 @@ function help_page {
     echo "bash $0 -t 'miniconda_target_directory' path to Miniconda"
     echo "bash $0 -e 'conda_environment' environment name in which MSMBuilder will be installed."
     echo "bash $0 -i ignore existing miniconda installation. Get a fresh copy."
-    echo "bash $0 -n do not add the new path of miniconda installation to PATH (bashrc update) [off by default]."
     echo "bash $0 -m minimal set of packags, eg. omit jupyter notebook installation."
 }
 
@@ -20,10 +19,9 @@ no_add_bashrc=1 # add new target to PATH in .bashrc
 #minimal=1 # minimal set of packags, eg. omit jupyter notebook installation
 
 
-while getopts "ht:e:inm" opt; do
+while getopts "ht:e:in" opt; do
    case $opt in
        n) no_add_bashrc=0;;
-       m) minimal=0;;
        t) target=$OPTARG;;
        e) env_name=$OPTARG;;
        i) ignore=0;;
@@ -92,21 +90,12 @@ function install_miniconda {
 
 function install_msmbuilder {
     # installs msmbuilder in an env named msmbuilder
-    packages="python==3.6 scikit-learn==0.19.0 numpy=1.11"
-	more_packages="jupyter"
-	more_packagess="msmexplorer msmbuilder==3.8.0"
-    if [ ! minimal ]; then
-        # add optional packages.
-        packages="$packages notebook ipython ipywidgets"
-    fi
     echo "creating environment..."
     conda=${target}/bin/conda
     if [[ -z $($conda env list | grep ${env_name}) ]]; then
         echo "env '$env_name' does not exist. Create new one."
         $conda env create -n ${env_name} -f environment.yml
 		source activate ${env_name}
-		# $conda install ${more_packages} -y  
-		# $conda install ${more_packagess} -y -c omnia
         $conda config --env --add channels conda-forge
 		$conda config --env --add channels omnia
 	echo "execute the following command to activate your newly created msmbuilder environment:"
