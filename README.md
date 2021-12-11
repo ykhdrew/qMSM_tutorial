@@ -1,25 +1,25 @@
 # A Step-by-step guide for building quasi Markov State Model
 Version 0.1, (c) Huang Group, Department of Chemistry, University of Wisconsin-Madison
 
-This is a tutorial for constructing quasi-Markov State model(qMSM), a new kinetic modelling framework that surpasses the sampling bottleneck in classical MSM
+This is a tutorial for constructing quasi-Markov State model(qMSM), a new kinetic modelling framework that surpasses the sampling bottleneck in classical MSM.
 
 The following content is accompanying the book chapter:
 "A Step-by-step Guide on How to Construct quasi-Markov State Models to Study Functional Conformational Changes of Biological Macromolecules" in
-"A Practical Guide to Recent Advances in Multiscale Modelling and Simulation of Biomolecules", AIP Publishing, to be Published
+"A Practical Guide to Recent Advances in Multiscale Modelling and Simulation of Biomolecules". AIP Publishing. to be Published.
 
 
 ### Content
 
-There are 7 notebooks that depict various stages of qMSM construction
+There are 8 Jupyter notebooks that depict various stages of qMSM construction
 
-1. Featurization [Link](notebook/Featurization.ipynb)
-2. Feature selection with Spectral oASIS [Link](notebook/SpectraloASIS-Parallel.ipynb)
-3. Dimensionality reduction with tlCA [Link](notebook/TICA.ipynb)
-4. APLoD clustering [Link](notebook/APLoD.ipynb)
-5. MSM hyperparameter selection with GMRQ [Link](notebook/Gmrq.ipynb)
-6. Microstate MSM and Lumping [Link](notebook/micorstate_MSM&PCCA.ipynb)
-7. quasi-Markov State Model [Link](notebook/qMSM.ipynb)
-8. MFPT calculation and macrostate sampling [Link](notebook/Analysis.ipynb)
+1. Featurization [Link to notebook](notebook/Featurization.ipynb)
+2. Feature selection with Spectral oASIS [Link to notebook](notebook/SpectraloASIS-Parallel.ipynb)
+3. Dimensionality reduction with tlCA [Link to notebook](notebook/TICA.ipynb)
+4. APLoD clustering [Link to notebook](notebook/APLoD.ipynb)
+5. MSM hyperparameter selection with GMRQ [Link to notebook](notebook/Gmrq.ipynb)
+6. Microstate MSM and Lumping [Link to notebook](notebook/micorstate_MSM&PCCA.ipynb)
+7. quasi-Markov State Model [Link to notebook](notebook/qMSM.ipynb)
+8. MFPT calculation and macrostate sampling [Link to notebook](notebook/Analysis.ipynb)
 
 For the MD trajectories, you may download them at our dispository on Open Science Framework. (Please refer to the book chapter for the URL)
 
