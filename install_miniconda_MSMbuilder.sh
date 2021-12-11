@@ -8,7 +8,7 @@ function help_page {
     echo "bash $0 -t 'miniconda_target_directory' path to Miniconda"
     echo "bash $0 -e 'conda_environment' environment name in which MSMBuilder will be installed."
     echo "bash $0 -i ignore existing miniconda installation. Get a fresh copy."
-    echo "bash $0 -m minimal set of packags, eg. omit jupyter notebook installation."
+    echo "bash $0 -n do not add the new path of miniconda installation to PATH (bashrc update) [off by default]."
 }
 
 # default values for arguments.
@@ -16,7 +16,6 @@ target=$HOME/miniconda3
 env_name="msmbuilder"
 ignore=1 # dont ignore existing miniconda installation, but just use it to install our environment.
 no_add_bashrc=1 # add new target to PATH in .bashrc
-#minimal=1 # minimal set of packags, eg. omit jupyter notebook installation
 
 
 while getopts "ht:e:in" opt; do
