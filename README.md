@@ -21,7 +21,7 @@ There are 8 Jupyter notebooks that depict various stages of qMSM construction
 7. quasi-Markov State Model [Link to notebook](notebook/qMSM.ipynb)
 8. MFPT calculation and macrostate sampling [Link to notebook](notebook/Analysis.ipynb)
 
-For the MD trajectories, you may download them at our dispository on Open Science Framework. (Please refer to the book chapter for the URL)
+For the MD trajectories, you may download them at our dispository on Open Science Framework: https://osf.io/wu2s6/?view_only=c7c5fef31563409babb403669a864572  
 
 ### Installation
 We will use MSMbuilder 3.8.0 and PyEMMA in our tutorial. For installing MSMbuilder, you can use the following script::
