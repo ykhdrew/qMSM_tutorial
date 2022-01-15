@@ -247,7 +247,7 @@ class QuasiMSM(object):
             plt.savefig("{}MIK.png".format(outdir))
             plt.show()
 
-    def QuasiMSMPrediciton(self, kernel_matrix, tau_k=10, end_point=100, outasfile=False, out_RMSE=False, outdir="./"):
+    def QuasiMSMPrediction(self, kernel_matrix, tau_k=10, end_point=100, outasfile=False, out_RMSE=False, outdir="./"):
         """
         This method is designed to use the qMSM algorithm in combination with the memory kernel
         for accurate prediction of long time scale dynamics.
