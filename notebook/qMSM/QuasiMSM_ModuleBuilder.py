@@ -25,20 +25,20 @@ class QuasiMSM(object):
     ----------
     input_len: int, default = 1
         The number of flatten TPM in your input. It will be used to reshape the input TPM.
-        input_len = (largest lag_time - smallest lag_time) / delt_time
+        input_len = (largest lag_time - smallest lag_time) / delta_time
 
     dimension: int, default = 1
         The dimensions of the TPM. This number is equal to the number of macrostate in your model.
         It will be used to reshape the input TPM.
 
-    delt_time: float, optional, default = 1.0
+    delta_time: float, optional, default = 1.0
         The time interval between each flatten TPM. All the calculation share the
-        same time unit as delt_time. When using the default vaule 1,
+        same time unit as delta_time. When using the default vaule 1,
         one should pay attention to the unit.
 
     There are other initial properties passed to the Class once they are created.
     TPM property can be retrieved through reshaping the original input data.
-    lag_time property can be calculated through the input delt_time.
+    lag_time property can be calculated through the input delta_time.
     dTPM_dt property is the derivative of TPM and dTPM_dt_0 is the first element of dTPM_dt.
     tau_k property is the time of memory kernel used to build qMSM for long time dynamics prediction.
     K_matrix property is set to store the memory kernel matrix K in qMSM.
@@ -46,8 +46,8 @@ class QuasiMSM(object):
     Other properties are private properties which are used to determine the process inside the program.
 
     """
-    def __init__(self, input_len=1, dimension=1, delt_time=1.0):
-        self.delt_time = delt_time
+    def __init__(self, input_len=1, dimension=1, delta_time=1.0):
+        self.delta_time = delta_time
         self.input_len = input_len
         self.dimension = dimension
         self.TPM = np.zeros((input_len, dimension, dimension))
@@ -95,7 +95,7 @@ class QuasiMSM(object):
         else:
             self.TPM = np.reshape(self.raw_data, (self.input_len, self.dimension, self.dimension))
             for i in range(self.input_len):
-                self.lag_time[i] = self.delt_time * (i+1)
+                self.lag_time[i] = self.delta_time * (i+1)
 
         if abs((np.sum(self.TPM[3, 0])) - 1) < 1e-3:
             self.__row_norm = True
@@ -121,7 +121,7 @@ class QuasiMSM(object):
         dTPM_dt_0 is the derivative at zero point, dTPM_dt is a derivative for different lag_time
         """
         for k in range(0, int(self.input_len) - 1):
-            self.dTPM_dt[k] = (self.TPM[k + 1] - self.TPM[k]) / self.delt_time
+            self.dTPM_dt[k] = (self.TPM[k + 1] - self.TPM[k]) / self.delta_time
             self.dTPM_dt_0 = np.dot(np.linalg.inv(self.TPM[0]), self.dTPM_dt[0])
         self.__get_dTPM_dt = True
         return self.dTPM_dt_0, self.dTPM_dt
@@ -159,9 +159,9 @@ class QuasiMSM(object):
                 for m in range(0, n):
                     memory_term += np.dot(self.TPM[n - m], self.K_matrix[m])
                 self.K_matrix[n] = np.dot(np.linalg.inv(self.TPM[0]),
-                                     (((self.dTPM_dt[n] - np.dot(self.TPM[n], self.dTPM_dt_0)) / self.delt_time) - memory_term))
+                                     (((self.dTPM_dt[n] - np.dot(self.TPM[n], self.dTPM_dt_0)) / self.delta_time) - memory_term))
             else:
-                self.K_matrix[n] = np.dot(np.linalg.inv(self.TPM[0]), ((self.dTPM_dt[n] - np.dot(self.TPM[n], self.dTPM_dt_0)) / self.delt_time))
+                self.K_matrix[n] = np.dot(np.linalg.inv(self.TPM[0]), ((self.dTPM_dt[n] - np.dot(self.TPM[n], self.dTPM_dt_0)) / self.delta_time))
             n += 1
 
         if outasfile:
@@ -193,7 +193,7 @@ class QuasiMSM(object):
             length = len(K_matrix)
             lag_time = np.zeros(length)
             for i in range(length):
-                lag_time[i] = (i+1) * self.delt_time
+                lag_time[i] = (i+1) * self.delta_time
             plt.figure(1)
             for i in range(self.dimension):
                 for j in range(self.dimension):
@@ -227,7 +227,7 @@ class QuasiMSM(object):
         integral_kernel[0] = self.K_matrix[0]
         for i in range(1, MIK_time):
             integral_kernel[i] = integral_kernel[i-1] + self.K_matrix[i]
-        integral_kernel = integral_kernel * self.delt_time
+        integral_kernel = integral_kernel * self.delta_time
         self.__dict__['MIK'] = np.zeros(int(MIK_time))
         for i in range(MIK_time):
             self.MIK[i] = np.sqrt(np.sum(np.power(integral_kernel[i], 2))) / self.dimension
@@ -242,8 +242,8 @@ class QuasiMSM(object):
             plt.rcParams['ytick.direction'] = 'in'
             plt.ylim(bottom=0)
             plt.tick_params(labelsize='large')
-            plt.xlabel("Lag step",size=16)
-            plt.ylabel("MIK(1/Lag step)",size=16)
+            plt.xlabel("Lag time(ns)",size=16)
+            plt.ylabel("MIK(1/Lag time)",size=16)
             plt.savefig("{}MIK.png".format(outdir))
             plt.show()
 
@@ -281,27 +281,27 @@ class QuasiMSM(object):
             raise NotImplementedError('Please use pre_set_data method to set TPM')
         else:
             TPM_propagate = np.zeros((int(end_point+1), self.dimension, self.dimension))
-            TPM_propagate[:tau_k+1,:, :] = self.TPM[:tau_k+1, :, :]
+            TPM_propagate[:tau_k,:, :] = self.TPM[:tau_k, :, :]
             TPM_grad = np.zeros((int(end_point), self.dimension, self.dimension))
-            kernel = kernel_matrix[:tau_k+1, :, :]
-            for i in range(tau_k):
-                TPM_grad[i] = (TPM_propagate[i + 1] - TPM_propagate[i]) / self.delt_time
+            kernel = kernel_matrix[:tau_k-1, :, :]
+            for i in range(tau_k-1):
+                TPM_grad[i] = (TPM_propagate[i + 1] - TPM_propagate[i]) / self.delta_time
             TPM_grad0 = np.dot(np.linalg.inv(TPM_propagate[0]), TPM_grad[0])
 
-            n = tau_k
+            n = tau_k-2
             while n < end_point:
                 memory_kernel = 0
-                for m in range(0, min(tau_k + 1, n + 1), 1):
+                for m in range(0, min(tau_k-1, n+1), 1):
                     memory_kernel += np.dot(TPM_propagate[n - m], kernel[m])
-                TPM_grad[n] = np.dot(TPM_propagate[n], TPM_grad0) + self.delt_time * memory_kernel
-                TPM_propagate[n + 1] = (self.delt_time * TPM_grad[n]) + TPM_propagate[n]
+                TPM_grad[n] = np.dot(TPM_propagate[n], TPM_grad0) + self.delta_time * memory_kernel
+                TPM_propagate[n + 1] = (self.delta_time * TPM_grad[n]) + TPM_propagate[n]
                 n += 1
 
             TPM_gen = np.zeros((int(end_point+1), self.dimension ** 2))
             TPM_gen_RMSE = np.zeros((int(end_point+1), self.dimension**2 + 1))
             for i in range(int(end_point+1)):
                 TPM_gen[i] = np.reshape(TPM_propagate[i], (1, -1))
-                TPM_gen_RMSE[i] = np.insert(TPM_gen[i], 0, values=(self.delt_time * i), axis=0)
+                TPM_gen_RMSE[i] = np.insert(TPM_gen[i], 0, values=(self.delta_time * i), axis=0)
             if outasfile:
                 with open("{}qMSM_Propagate_TPM.txt".format(outdir), 'ab') as file1:
                     if not os.path.getsize("{}qMSM_Propagate_TPM.txt".format(outdir)):
@@ -309,8 +309,8 @@ class QuasiMSM(object):
                     else:
                         raise IOError('Output File already exists, please create another!!')
             if out_RMSE:
-                with open("{}qMSM_Propagate_TPM_RMSE.txt".format(outdir), 'ab') as file2:
-                    if not os.path.getsize("{}qMSM_Propagate_TPM_RMSE.txt".format(outdir)):
+                with open('qMSM_Propagate_TPM_RMSE.txt', 'ab') as file2:
+                    if not os.path.getsize('qMSM_Propagate_TPM_RMSE.txt'):
                         np.savetxt(file2, TPM_gen_RMSE, delimiter=' ')
                     else:
                         raise IOError('Output File already exists, please create another!!')
@@ -319,7 +319,7 @@ class QuasiMSM(object):
             del TPM_grad
             del TPM_grad0
             del TPM_gen
-        return TPM_propagate, TPM_gen_RMSE
+        return TPM_propagate, TPM_gen_RMSE  
 
     def MSMPrediction(self, tau=10, end_point=100, add_iden_mat=False, outasfile=False, out_RMSE=False, outdir="./"):
         """
@@ -353,14 +353,14 @@ class QuasiMSM(object):
                 TPM_propagate[0] = np.identity(self.dimension)
                 TPM_propagate[1] = self.TPM[tau]
                 time[0] = 0
-                time[1] = tau * self.delt_time
+                time[1] = tau * self.delta_time
             else:
                 TPM_propagate[0] = self.TPM[tau]
-                time[0] = tau * self.delt_time
+                time[0] = tau * self.delta_time
 
             for i in range((int(add_iden_mat) + 1), len(TPM_propagate), 1):
                 TPM_propagate[i] = np.dot(TPM_propagate[i - 1], self.TPM[tau])
-                time[i] = time[i - 1] + (tau * self.delt_time)
+                time[i] = time[i - 1] + (tau * self.delta_time)
             TPM_gen = np.zeros((len(TPM_propagate), self.dimension**2))
             TPM_gen_RMSE = np.zeros((len(TPM_propagate), self.dimension**2 + 1))
             for i in range(len(TPM_propagate)):
@@ -408,7 +408,7 @@ class QuasiMSM(object):
             if not len(MSM_TPM[0]) == self.dimension**2+1:
                 raise ValueError('Time information should be included in the input TPM')
         if not isinstance(qMSM_TPM, np.ndarray) or not qMSM_TPM.ndim == 2:
-            raise ValueError('qMSM_TPM should be a return value of QuasiMSMPrediciton method')
+            raise ValueError('qMSM_TPM should be a return value of QuasiMSMPrediction method')
         if not len(qMSM_TPM[0]) == self.dimension**2+1:
             raise ValueError('Time information should be included in the input TPM')
         if not len(grid) == 2 or not (grid[0]*grid[1] == self.dimension or grid[0]*grid[1] == self.dimension**2):
@@ -455,7 +455,7 @@ class QuasiMSM(object):
                 plt.xlim(left=0)
                 plt.ylim(top=1)
                 plt.tick_params(labelsize='large')
-                plt.xlabel("Lag step",size=16)       
+                plt.xlabel("Lag time(ns)",size=16)       
                 plt.ylabel("Residence Probability",size=16)
                 plt.tight_layout()
             plt.savefig("{}CK_plot.png".format(outdir))
@@ -476,7 +476,7 @@ class QuasiMSM(object):
                     plt.xlim(0, num_dot)
                     plt.ylim(top=1)
                     plt.tick_params(labelsize='large')
-                    plt.xlabel("Lag step",size=16)       
+                    plt.xlabel("Lag time(ns)",size=16)       
                     plt.ylabel("Residence Probability",size=16)
                     plt.tight_layout()
             plt.savefig("{}CK_plot.png".format(outdir))
@@ -534,7 +534,7 @@ class QuasiMSM(object):
         # for i in range(len(p_k)):
         #     eigenval, p_k[i] = scipy.linalg.eig(self.TPM[i], right=False, left=True)
         while n < end_point:
-            qMSM_TPM, qMSM_TPM_RMSE = self.QuasiMSMPrediciton(kernel_matrix=kernel, tau_k=n, end_point=end_point)
+            qMSM_TPM, qMSM_TPM_RMSE = self.QuasiMSMPrediction(kernel_matrix=kernel, tau_k=n, end_point=end_point)
             MSM_TPM, MSM_TPM_RMSE = self. MSMPrediction(tau=n, end_point=end_point)
             MSM_TPM_time = MSM_TPM_RMSE[:, 0]
             qMSM_delt_mat = np.zeros((len(qMSM_TPM), self.dimension, self.dimension))
@@ -545,14 +545,14 @@ class QuasiMSM(object):
                 qMSM_delt_mat[i] = np.power(qMSM_delt_mat[i], 2)
             MSM_delt_mat = np.zeros((len(MSM_TPM_time), self.dimension, self.dimension))
             for i in range(len(MSM_TPM_time)):
-                # MSM_delt_mat[i] = (MSM_TPM[i] - self.TPM[int(MSM_TPM_time[i]/self.delt_time - 1)])
-                # MSM_delt_mat[i] = np.dot((MSM_TPM[i] - self.TPM[int(MSM_TPM_time[i] / self.delt_time - 1)]), p_k)
-                MSM_delt_mat[i] = np.dot(p_k, (MSM_TPM[i] - self.TPM[int(MSM_TPM_time[i] / self.delt_time - 1)]))
+                # MSM_delt_mat[i] = (MSM_TPM[i] - self.TPM[int(MSM_TPM_time[i]/self.delta_time - 1)])
+                # MSM_delt_mat[i] = np.dot((MSM_TPM[i] - self.TPM[int(MSM_TPM_time[i] / self.delta_time - 1)]), p_k)
+                MSM_delt_mat[i] = np.dot(p_k, (MSM_TPM[i] - self.TPM[int(MSM_TPM_time[i] / self.delta_time - 1)]))
                 MSM_delt_mat[i] = np.power(MSM_delt_mat[i], 2)
 
             qMSM_RMSE = np.append(qMSM_RMSE, 100*(np.sqrt((np.sum(qMSM_delt_mat) / self.dimension**2 / (len(qMSM_delt_mat))))))
             MSM_RMSE = np.append(MSM_RMSE, 100*(np.sqrt((np.sum(MSM_delt_mat) / self.dimension**2 / (len(MSM_delt_mat))))))
-            RMSE_time.append(n * self.delt_time)
+            RMSE_time.append(n * self.delta_time)
             n += 1
         del qMSM_TPM
         del qMSM_TPM_RMSE
@@ -564,7 +564,7 @@ class QuasiMSM(object):
             plt.plot(RMSE_time, MSM_RMSE, color='black', label='MSM', linewidth=2.5)
             plt.legend(loc='best', frameon=True)
             plt.ylabel('RMSE(%)',size=16)
-            plt.xlabel('Lagstep',size=16)
+            plt.xlabel('Lag Time(ns)',size=16)
             plt.xlim(left=0)
             plt.ylim(bottom=0)
             plt.tick_params(labelsize='large')
@@ -601,26 +601,26 @@ class QuasiMSM(object):
 
 ## qMSM for Alaine Dipeptide
 # input_data = np.loadtxt("ala2-pccap-4states-0.1ps-50ps.txt", dtype=float)
-# qmsm = QuasiMSM(input_len=500, delt_time=0.1, dimension=4)
+# qmsm = QuasiMSM(input_len=500, delta_time=0.1, dimension=4)
 # qmsm.GetData(input_data)
 # qmsm.Pre_SetData()
 # qmsm.Get_dTPM_dt()
 # km = qmsm.Calculate_K_matrix(cal_step=300)
 # qmsm.MeanIntegralKernel(MIK_time=50, figure=True)
-# qmsm_tpm, qmsm_tpm_time = qmsm.QuasiMSMPrediciton(kernel_matrix=km, tau_k=15, end_point=200)
+# qmsm_tpm, qmsm_tpm_time = qmsm.QuasiMSMPrediction(kernel_matrix=km, tau_k=15, end_point=200)
 # msm_tpm, msm_tpm_time = qmsm.MSMPrediction(tau=15, end_point=200, add_iden_mat=False)
 # qmsm.CK_figure(qMSM_TPM=qmsm_tpm_time, MSM_TPM=msm_tpm_time, add_iden_mat=True, diag=False, grid=[4,4], slice_dot=10)
 # qmsm.RMSE(kernel=km, end_point=200, figure=True, outasfile=False)
 
 ## qMSM for FIP35 WW_Domain
 # input_data = np.loadtxt("FIP35_TPM_4states_1ns_2us.txt", dtype=float)
-# qmsm = QuasiMSM(input_len=2000, delt_time=1, dimension=4)
+# qmsm = QuasiMSM(input_len=2000, delta_time=1, dimension=4)
 # qmsm.GetData(input_data)
 # qmsm.Pre_SetData()
 # qmsm.Get_dTPM_dt()
 # km = qmsm.Calculate_K_matrix(cal_step=400)
 # qmsm.MeanIntegralKernel(MIK_time=250, figure=True)
-# qmsm_tpm, qmsm_tpm_time = qmsm.QuasiMSMPrediciton(kernel_matrix=km, tau_k=25, end_point=400)
+# qmsm_tpm, qmsm_tpm_time = qmsm.QuasiMSMPrediction(kernel_matrix=km, tau_k=25, end_point=400)
 # msm_tpm, msm_tpm_time = qmsm.MSMPrediction(tau=25, end_point=400, add_iden_mat=True)
 # qmsm.CK_figure(qMSM_TPM=qmsm_tpm_time, MSM_TPM=msm_tpm_time, add_iden_mat=True, diag=True, grid=[4,4], slice_dot=40)
 # qmsm.RMSE(kernel=km, end_point=399, figure=True, outasfile=False)
@@ -634,14 +634,14 @@ class QuasiMSM(object):
 
 ## qMSM for hAgo2 System
 # input_data = np.loadtxt("Lizhe_TPM.sm.macro-transpose.5-800ns.txt", dtype=float)
-# qmsm = QuasiMSM(input_len=160, delt_time=1, dimension=4)
+# qmsm = QuasiMSM(input_len=160, delta_time=1, dimension=4)
 # qmsm.GetData(input_data)
 # qmsm.Pre_SetData()
 # qmsm.Get_dTPM_dt()
 # km = qmsm.Calculate_K_matrix(cal_step=100)
 # qmsm.MeanIntegralKernel(MIK_time=80, figure=True)
 # qmsm.KernelPlot(km)
-# qmsm_tpm, qmsm_tpm_time = qmsm.QuasiMSMPrediciton(kernel_matrix=km, tau_k=50, end_point=200)
+# qmsm_tpm, qmsm_tpm_time = qmsm.QuasiMSMPrediction(kernel_matrix=km, tau_k=50, end_point=200)
 # msm_tpm, msm_tpm_time = qmsm.MSMPrediction(tau=5, end_point=150, add_iden_mat=True)
 # qmsm.CK_figure(qMSM_TPM=qmsm_tpm_time, MSM_TPM=msm_tpm_time, add_iden_mat=True, diag=True, grid=[4,4], slice_dot=10)
 # qmsm.RMSE(kernel=km, end_point=80, figure=True, outasfile=False)
