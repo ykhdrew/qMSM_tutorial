@@ -1,7 +1,7 @@
-# A Step-by-step guide for building quasi Markov State Model
+# A Step-by-step guide for building quasi Markov State Model to Study Functional Conformational Changes of Biological Macromolecules
 Version 0.1, (c) Huang Group, Department of Chemistry, University of Wisconsin-Madison
 
-This is a tutorial for constructing quasi-Markov State model(qMSM), a new kinetic modelling framework that surpasses the sampling bottleneck in classical MSM.
+This is a tutorial for constructing quasi-Markov State model(qMSM), a new kinetic modelling framework that encodes non-Markovian dynamics in time-dependent memory kernels.
 
 The following content is accompanying the book chapter:
 "A Step-by-step Guide on How to Construct quasi-Markov State Models to Study Functional Conformational Changes of Biological Macromolecules" in
@@ -24,11 +24,9 @@ There are 8 Jupyter notebooks that depict various stages of qMSM construction
 For the MD trajectories, you may download them at our dispository on Open Science Framework: https://osf.io/wu2s6/?view_only=c7c5fef31563409babb403669a864572  
 
 ### Installation
-We will use MSMbuilder 3.8.0 and PyEMMA in our tutorial. For installing MSMbuilder, you can use the following script::
+We will use MSMbuilder 3.8.0 and PyEMMA in our tutorial. For installing MSMbuilder with Anaconda, you can use the following script:
 
-	bash install_miniconda_MSMbuilder.sh
-
-This will install miniconda(if not installed yet), MSMbuilder as well as libraries used in this tutorial.
+	conda env create -n msmbuilder -f environment.yml
 
 For PyEMMA installation, you may refer to http://pyemma.org.
 
