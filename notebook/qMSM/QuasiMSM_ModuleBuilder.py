@@ -565,7 +565,7 @@ class QuasiMSM(object):
             plt.legend(loc='best', frameon=True)
             plt.ylabel('RMSE(%)',size=16)
             plt.xlabel('Lag Time(ns)',size=16)
-            plt.xlim(left=0)
+            plt.xlim(left=0,right=RMSE_time[int((len(RMSE_time) - 1)/2)])
             plt.ylim(bottom=0)
             plt.tick_params(labelsize='large')
             plt.tight_layout()
