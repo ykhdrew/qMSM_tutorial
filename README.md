@@ -6,6 +6,7 @@ This is a tutorial for constructing quasi-Markov State model(qMSM), a new kineti
 The following content is accompanying the book chapter:
 "A Step-by-step Guide on How to Construct quasi-Markov State Models to Study Functional Conformational Changes of Biological Macromolecules" in
 "A Practical Guide to Recent Advances in Multiscale Modelling and Simulation of Biomolecules". AIP Publishing. to be Published.
+(Currently available at ChemRxiv: https://chemrxiv.org/engage/chemrxiv/article-details/620b1bff0c0bf09733e9cde8)
 
 
 ### Content
