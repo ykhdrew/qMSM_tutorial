@@ -44,4 +44,4 @@ This tutorial is licensed with <a rel="license" href="http://creativecommons.org
 The library for Quasi-MSM construction is licensed with  <a rel="license" href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a>.
 
 ### Note for readers and people curious about qMSM
-You may contact Dr Siqin Cao scao66@wisc.edu/ Qiu Yunrui yqiu78@wisc.edu in case you have any specific questions on the qMSM python package or model construction using the qMSM framework
+You may contact Dr Siqin Cao scao66@wisc.edu/ Qiu Yunrui yqiu78@wisc.edu in case you have any specific questions on the qMSM python package or model construction using the qMSM framework.
