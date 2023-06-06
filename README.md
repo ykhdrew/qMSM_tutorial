@@ -4,6 +4,7 @@ Version 0.1, (c) Huang Group, Department of Chemistry, University of Wisconsin-M
 This is a tutorial for constructing quasi-Markov State model(qMSM), a new kinetic modelling framework that encodes non-Markovian dynamics in time-dependent memory kernels.
 
 The following content is accompanying the book chapter:
+
 "A Step-by-step Guide on How to Construct quasi-Markov State Models to Study Functional Conformational Changes of Biological Macromolecules",
 Chapter 10, “A Practical Guide to Recent Advances in Multi-scale Modeling and Simulation for Biomolecules”, Edited by Wang, Y. and Zhou, R., AIP Publishing (2023).
 
